@@ -1,0 +1,28 @@
+import { ThunkDispatch } from 'redux-thunk';
+import {IImagesState} from "./images/reducer";
+
+export interface IAction<P> {
+  type: string;
+  payload: P;
+}
+
+export type Reducer<S, P> = (state: S, action: IAction<P>) => S;
+
+export interface IHandlers<S, P> {
+  [key: string]: Reducer<S, P>;
+}
+
+export interface RootState {
+  //todo add
+  images: IImagesState;
+}
+
+export type AsyncDispatch<T, P> = (
+  dispatch: ThunkDispatch<T, any, IAction<P>>,
+  getState: () => RootState
+) => Promise<void>;
+
+export type SyncDispatch<T, P> = (
+  dispatch: ThunkDispatch<T, any, IAction<P>>,
+  getState: () => RootState
+) => void;
