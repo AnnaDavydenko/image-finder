@@ -1,58 +1,95 @@
-import React, {FC, useCallback, useEffect} from 'react';
+import React, {ChangeEvent, FC, MouseEventHandler, useCallback, useEffect, useMemo, useState} from 'react';
 import {createStyles, makeStyles, Theme, fade} from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Tags from "./Tags";
 import BookmarkBorderIcon from '@material-ui/icons/BookmarkBorder';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
-import {Card, CardActionArea, CardContent, CardMedia, IconButton, Zoom} from "@material-ui/core";
+import {Card, CardActionArea, CardContent, CardMedia, IconButton, Link, Zoom} from "@material-ui/core";
 import InputBase from '@material-ui/core/InputBase';
 import SearchIcon from '@material-ui/icons/Search';
-import {getImagesThunk, searchImagesThunk} from "../redux/images/thunk";
-import {useDispatch} from "react-redux";
+import {searchImagesThunk} from "../redux/images/thunk";
+import {useDispatch, useSelector} from "react-redux";
+import {imagesDataSelector} from "../redux/images/selectors";
+import {Pagination} from '@material-ui/lab';
+
+const IMAGES_PER_PAGE = 12;
 
 const SearchPage: FC = () => {
 
     const classes = useStyles();
     const dispatch = useDispatch();
 
-    // const [] = useState();
+    const {totalPages, images, links} = useSelector(imagesDataSelector);
+
+    //console.log({totalPages, images, links});
+
+    const [value, setValue] = useState<string>("all");
+    const [page, setPage] = useState(1);
 
     useEffect(() => {
-        dispatch(searchImagesThunk());
-    },[dispatch]);
+        dispatch(searchImagesThunk(value, page, IMAGES_PER_PAGE));
+    },[dispatch, value, page]);
 
-    const images = new Array(50).fill({url: "https://images.pexels.com/photos/3225517/pexels-photo-3225517.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",});
+    const totalPagesPagination = useMemo(() => Math.ceil(totalPages / IMAGES_PER_PAGE), [totalPages]);
 
-    const handleClick = useCallback(() => {
+    const handleChangePage = useCallback((event: ChangeEvent<unknown>, value: number) => {
+        setPage(value);
+    }, []);
 
+    const handleSearch = useCallback(() => {
+        dispatch(searchImagesThunk(value, page, IMAGES_PER_PAGE));
+    },[dispatch, value, page]);
+
+    const handleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+        const target = e.target as HTMLInputElement;
+        setValue(target.value);
     },[]);
+
+    const handleKeyPress = useCallback((e: KeyboardEvent) => {
+        e.preventDefault();
+        if (e.key === "Enter") {
+            handleSearch();
+        }
+    }, [handleSearch]);
+
+    useEffect(() => {
+        document.addEventListener("keyup", handleKeyPress);
+        return () => {
+            document.removeEventListener("keyup", handleKeyPress);
+        }
+    }, [handleKeyPress]);
 
     return (
         <Grid container direction="column" justify="space-between" alignItems="center" className={classes.container}>
-            <Grid container className={classes.search}>
-                <InputBase
-                    placeholder="Search…"
-                    classes={{
-                        root: classes.inputRoot,
-                        input: classes.inputInput,
-                    }}
-                    inputProps={{ 'aria-label': 'search' }}
-                />
-                <IconButton onClick={handleClick} className={classes.iconButton} aria-label="search">
-                    <SearchIcon />
-                </IconButton>
+            <Grid container justify="space-between" alignItems="center">
+                <Pagination count={totalPagesPagination} page={page} onChange={handleChangePage} variant="outlined" />
+                <Grid container className={classes.search}>
+                    <InputBase
+                        autoFocus
+                        placeholder="Search…"
+                        classes={{
+                            root: classes.inputRoot,
+                            input: classes.inputInput,
+                        }}
+                        inputProps={{ 'aria-label': 'search' }}
+                        onChange={handleChange}
+                        value={value}
+                    />
+                    <IconButton onClick={handleSearch} className={classes.iconButton} aria-label="search">
+                        <SearchIcon />
+                    </IconButton>
+                </Grid>
             </Grid>
-
             <Grid container justify="center" alignItems="center">
-                {images.map((image, index) => (
-                    <Grid container justify="center" alignItems="center" key={index} item md={4} xs={6} className={classes.imageContainer}>
+                {images.map((imageData: {id: string, image: string}, index: number) => (
+                    <Grid container justify="center" alignItems="center" key={imageData.id} item md={4} xs={6} className={classes.imageContainer}>
                         <Zoom in>
                             <Card className={classes.card}>
                                 <CardActionArea>
                                     <CardMedia
                                         className={classes.mediaImage}
-                                        image={image.url}
+                                        image={imageData.image}
                                     />
                                     <BookmarkBorderIcon fontSize="large" className={classes.bookmarkIcon}/>
                                     <CardContent>

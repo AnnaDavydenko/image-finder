@@ -3,18 +3,22 @@ import {IAction} from "../types";
 import {FETCH_IMAGES} from "./action-types";
 
 export interface IImagesState {
-  images: IImages[];
+  totalPages: number;
+  images: {id: string, image: string}[];
+  links: string[];
   error?: Error;
   isLoading: boolean;
 }
 
 const initialState: IImagesState = {
+  totalPages: 0,
   images: [],
+  links: [],
   error: undefined,
   isLoading: false,
 };
 
-export const images = (state: IImagesState = initialState, action: IAction<IImages[]>) => {
+export const images = (state: IImagesState = initialState, action: IAction<any>) => {
   switch (action.type) {
 
     case FETCH_IMAGES.START:
@@ -27,7 +31,9 @@ export const images = (state: IImagesState = initialState, action: IAction<IImag
       return {
         ...state,
         isLoading: false,
-        images: action.payload
+        totalPages: action.payload.totalPages,
+        images: action.payload.images,
+        links: action.payload.links,
       };
 
     case FETCH_IMAGES.FAILURE:

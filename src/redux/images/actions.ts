@@ -7,9 +7,9 @@ export const startRequest = (): IAction<undefined> => ({
   payload: undefined
 });
 
-export const fetchSuccess = (images: string[], links: string[]): IAction<{images: string[], links: string[]}> => ({
+export const fetchSuccess = (totalPages: number, images: {id: string, image: string}[], links: string[]): IAction<{totalPages: number, images: {id: string, image: string}[], links: string[]}> => ({
   type: FETCH_IMAGES.SUCCESS,
-  payload: {images, links}
+  payload: {images, links, totalPages}
 });
 
 export const fetchFailure = (error: Error): IAction<Error> => ({
