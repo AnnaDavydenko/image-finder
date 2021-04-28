@@ -1,4 +1,4 @@
-import {IImages, ILinks} from "../../common/types";
+import {IImagesData} from "../../common/types";
 import {IAction} from "../types";
 import {FETCH_IMAGES} from "./action-types";
 
@@ -7,9 +7,9 @@ export const startRequest = (): IAction<undefined> => ({
   payload: undefined
 });
 
-export const fetchSuccess = (totalPages: number, images: {id: string, image: string}[], links: string[]): IAction<{totalPages: number, images: {id: string, image: string}[], links: string[]}> => ({
+export const fetchSuccess = (totalPages: number, images: {id: string, image: string}[], links: string[]): IAction<IImagesData> => ({
   type: FETCH_IMAGES.SUCCESS,
-  payload: {images, links, totalPages}
+  payload: {totalPages, images, links}
 });
 
 export const fetchFailure = (error: Error): IAction<Error> => ({

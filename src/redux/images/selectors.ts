@@ -1,6 +1,5 @@
 import { createSelector } from 'reselect';
 import {IState} from "../../common/types";
-import {IImagesState} from "./reducer";
 
 export const getImagesData = (state: IState) => {
     return state.images;

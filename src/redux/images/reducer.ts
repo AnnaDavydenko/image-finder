@@ -1,11 +1,8 @@
-import {IImages} from "../../common/types";
+import {IImagesData} from "../../common/types";
 import {IAction} from "../types";
 import {FETCH_IMAGES} from "./action-types";
 
-export interface IImagesState {
-  totalPages: number;
-  images: {id: string, image: string}[];
-  links: string[];
+export interface IImagesState extends IImagesData {
   error?: Error;
   isLoading: boolean;
 }
@@ -18,7 +15,7 @@ const initialState: IImagesState = {
   isLoading: false,
 };
 
-export const images = (state: IImagesState = initialState, action: IAction<any>) => {
+export const images = (state: IImagesState = initialState, action: IAction<IImagesData>) => {
   switch (action.type) {
 
     case FETCH_IMAGES.START:

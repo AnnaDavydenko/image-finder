@@ -1,16 +1,26 @@
 import React, {FC, LegacyRef, useCallback, useRef, useState} from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import {useDispatch, useSelector} from "react-redux";
+import {favoritesDataSelector} from "../redux/favorites/selectors";
+import {taggedImagesSelector} from "../redux/tags/selectors";
+import {addTagToImageThunk, removeTaggedImagesThunk} from "../redux/tags/thunk";
 
 const ENTER_KEY = 'Enter';
 const COMMA_KEY = ',';
 const BACKSPACE_KEY = 'Backspace';
 
-const Tags: FC = () => {
-    const [tags, setTags] = useState<string[]>([]);
+const Tags: FC<{id: string}> = (props: {id: string}) => {
+    const {id} = props;
+    const taggedImages = useSelector(taggedImagesSelector);
+    const image = taggedImages.find((item: any) => item.id === id);
+
+    const [tags, setTags] = useState<string[]>(image?.tags || []);
     const [value, setValue] = useState<string>("");
+    const dispatch = useDispatch();
+
 
     const classes = useStyles();
 
@@ -23,13 +33,15 @@ const Tags: FC = () => {
 
         setTags([...tags, tag]);
         setValue("");
-    },[value, tags]);
+        dispatch(addTagToImageThunk(tag, id));
+    },[dispatch, value, tags, id]);
 
     const editPrevTag = useCallback(() => {
         const tag = tags.pop() as string;
         setValue(tag);
         setTags([...tags]);
-    },[tags]);
+        dispatch(removeTaggedImagesThunk(tag, id));
+    },[dispatch, id, tags]);
 
     const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         const target = e.target as HTMLInputElement;
@@ -72,38 +84,38 @@ const Tags: FC = () => {
     );
 };
 
-const useStyles = makeStyles({
-    form: {
-
-    },
-    tags: {
-        background: '#fff',
-        padding: '5px',
-        overflow: 'hidden',
-    },
-    tag: {
-        color: '#fff',
-        fontWeight: 'bold',
-        background: '#3498db',
-        float: 'left',
-        padding: '5px 10px',
-        borderRadius: '10em',
-        margin: '5px',
-        "& button": {
-            background: 'transparent',
-            border: 0,
-            cursor: 'pointer',
+const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+        form: {},
+        tags: {
+            color: theme.palette.background.paper,
+            padding: '5px',
+            overflow: 'hidden',
         },
-    },
-    input: {
-        padding: '5px 10px',
-        boxSizing: 'border-box',
-        color: '#7f8c8d',
-        border: 0,
-        float: 'left',
-        margin: '10px 0',
-        fontSize: '16px',
-        outline: 0,
-    },
-});
+        tag: {
+            color: theme.palette.background.paper,
+            fontWeight: 'bold',
+            background: theme.palette.text.primary,
+            float: 'left',
+            padding: '5px 10px',
+            borderRadius: '10em',
+            margin: '5px',
+            "& button": {
+                background: 'transparent',
+                border: 0,
+                cursor: 'pointer',
+            },
+        },
+        input: {
+            padding: '5px 10px',
+            boxSizing: 'border-box',
+            color: theme.palette.text.secondary,
+            border: 0,
+            float: 'left',
+            margin: '10px 0',
+            fontSize: '16px',
+            outline: 0,
+        },
+    })
+);
 export default Tags;

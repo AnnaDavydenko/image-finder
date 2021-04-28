@@ -1,111 +1,95 @@
-import React, {ChangeEvent, FC, MouseEventHandler, useCallback, useEffect, useMemo, useState} from 'react';
+import React, {ChangeEvent, FC, useCallback, useEffect, useMemo, useState} from 'react';
 import {createStyles, makeStyles, Theme, fade} from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import Tags from "./Tags";
-import BookmarkBorderIcon from '@material-ui/icons/BookmarkBorder';
-import BookmarkIcon from '@material-ui/icons/Bookmark';
-import {Card, CardActionArea, CardContent, CardMedia, IconButton, Link, Zoom} from "@material-ui/core";
 import InputBase from '@material-ui/core/InputBase';
-import SearchIcon from '@material-ui/icons/Search';
 import {searchImagesThunk} from "../redux/images/thunk";
 import {useDispatch, useSelector} from "react-redux";
-import {imagesDataSelector} from "../redux/images/selectors";
-import {Pagination} from '@material-ui/lab';
+import {getImagesData, imagesDataSelector} from "../redux/images/selectors";
+import {addFavoritesThunk, removeFavoritesThunk} from "../redux/favorites/thunk";
+import ImageCard from "./ImageCard";
+import PaginationComponent from "./PaginationComponent";
+import {favoritesDataSelector} from "../redux/favorites/selectors";
+import {IFavorite} from "../common/types";
+import Loader from "./Loader";
 
-const IMAGES_PER_PAGE = 12;
+const IMAGES_PER_PAGE = 6;
 
 const SearchPage: FC = () => {
 
     const classes = useStyles();
     const dispatch = useDispatch();
-
+    const favoritesData = useSelector(favoritesDataSelector);
+    const imagesData = useSelector(getImagesData);
     const {totalPages, images, links} = useSelector(imagesDataSelector);
 
-    //console.log({totalPages, images, links});
-
     const [value, setValue] = useState<string>("all");
-    const [page, setPage] = useState(1);
+    const [page, setPage] = useState<number>(1);
 
     useEffect(() => {
         dispatch(searchImagesThunk(value, page, IMAGES_PER_PAGE));
     },[dispatch, value, page]);
 
-    const totalPagesPagination = useMemo(() => Math.ceil(totalPages / IMAGES_PER_PAGE), [totalPages]);
-
     const handleChangePage = useCallback((event: ChangeEvent<unknown>, value: number) => {
         setPage(value);
     }, []);
 
-    const handleSearch = useCallback(() => {
-        dispatch(searchImagesThunk(value, page, IMAGES_PER_PAGE));
-    },[dispatch, value, page]);
+    const displayImages = useMemo(() => {
+        return images.map((imageItem) => {
+            imageItem.isBookmark = !!favoritesData.find((item: IFavorite) => item.id === imageItem.id);
+            return imageItem;
+        });
+    }, [favoritesData, images]);
 
     const handleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
         const target = e.target as HTMLInputElement;
         setValue(target.value);
     },[]);
 
-    const handleKeyPress = useCallback((e: KeyboardEvent) => {
-        e.preventDefault();
-        if (e.key === "Enter") {
-            handleSearch();
+    const handleBookmark = useCallback((index) => () => {
+        const bookmark = favoritesData.find((item: IFavorite) => item.id === images[index].id);
+        if (bookmark) {
+            dispatch(removeFavoritesThunk(images[index].id));
+        } else {
+            dispatch(addFavoritesThunk({id: images[index].id, image: images[index].image, link: links[index]}));
         }
-    }, [handleSearch]);
-
-    useEffect(() => {
-        document.addEventListener("keyup", handleKeyPress);
-        return () => {
-            document.removeEventListener("keyup", handleKeyPress);
-        }
-    }, [handleKeyPress]);
+    },[dispatch, images, links, favoritesData]);
 
     return (
-        <Grid container direction="column" justify="space-between" alignItems="center" className={classes.container}>
-            <Grid container justify="space-between" alignItems="center">
-                <Pagination count={totalPagesPagination} page={page} onChange={handleChangePage} variant="outlined" />
-                <Grid container className={classes.search}>
-                    <InputBase
-                        autoFocus
-                        placeholder="Search…"
-                        classes={{
-                            root: classes.inputRoot,
-                            input: classes.inputInput,
-                        }}
-                        inputProps={{ 'aria-label': 'search' }}
-                        onChange={handleChange}
-                        value={value}
-                    />
-                    <IconButton onClick={handleSearch} className={classes.iconButton} aria-label="search">
-                        <SearchIcon />
-                    </IconButton>
-                </Grid>
-            </Grid>
-            <Grid container justify="center" alignItems="center">
-                {images.map((imageData: {id: string, image: string}, index: number) => (
-                    <Grid container justify="center" alignItems="center" key={imageData.id} item md={4} xs={6} className={classes.imageContainer}>
-                        <Zoom in>
-                            <Card className={classes.card}>
-                                <CardActionArea>
-                                    <CardMedia
-                                        className={classes.mediaImage}
-                                        image={imageData.image}
-                                    />
-                                    <BookmarkBorderIcon fontSize="large" className={classes.bookmarkIcon}/>
-                                    <CardContent>
-                                        <Tags />
-                                    </CardContent>
-                                </CardActionArea>
-                            </Card>
-                        </Zoom>
-
+        <>
+        {!imagesData.isLoading ? (<Loader/>) : (
+            <Grid container direction="column" justify="space-between" alignItems="center" className={classes.container}>
+                    <Grid container justify="flex-end" alignItems="center">
+                        <Grid container className={classes.search}>
+                            <InputBase
+                                autoFocus
+                                placeholder="Search…"
+                                classes={{
+                                    root: classes.inputRoot,
+                                    input: classes.inputInput,
+                                }}
+                                inputProps={{ 'aria-label': 'search' }}
+                                onChange={handleChange}
+                                value={value}
+                            />
+                        </Grid>
                     </Grid>
-                ))}
-            </Grid>
-
-        </Grid>
+                    <Grid container justify="center" alignItems="center">
+                        {displayImages.map((imageData, index) => (
+                            <ImageCard isBookmark={imageData.isBookmark as boolean}
+                                       key={imageData.id}
+                                       id={imageData.id}
+                                       imageUrl={imageData.image}
+                                       index={index}
+                                       link={links[index]}
+                                       handleBookmark={handleBookmark}/>
+                        ))}
+                    </Grid>
+                    <PaginationComponent totalPages={totalPages} ImagesPerPage={IMAGES_PER_PAGE} page={page} handleChangePage={handleChangePage}/>
+                </Grid>)}
+        </>
 	);
 };
+
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -150,7 +134,8 @@ const useStyles = makeStyles((theme: Theme) =>
             },
         },
         inputRoot: {
-            color: 'inherit',
+            color: theme.palette.text.secondary,
+            fontSize: '16px',
         },
         inputInput: {
             padding: theme.spacing(1, 1, 1, 0),

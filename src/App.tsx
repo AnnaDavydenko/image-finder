@@ -3,26 +3,21 @@ import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import theme from "./theme";
-import {ThemeProvider} from '@material-ui/core/styles';
+import {createStyles, makeStyles, Theme, ThemeProvider} from '@material-ui/core/styles';
 import Navigation from "./components/Navigation";
 import SearchPage from "./components/SearchPage";
 import Bookmarks from "./components/Bookmarks";
 import {Grid} from "@material-ui/core";
-interface IRedux {}
 
-interface IDispatch {}
-
-type IProps = IRedux & IDispatch;
-
-const App: FC<IProps> = (props: IProps) => {
-    const {} = props;
+const App: FC = () => {
+    const classes = useStyles();
 
     return (
         <>
             <Router>
                 <ThemeProvider theme={theme}>
                     <Header/>
-                    <Grid container>
+                    <Grid container className={classes.container}>
                         <Grid item xs={1}>
                             <Navigation/>
                         </Grid>
@@ -39,5 +34,12 @@ const App: FC<IProps> = (props: IProps) => {
         </>
     );
 };
+const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+        container: {
+            // height: 'calc(100% - 111px)',
+        },
+    })
+);
 
 export default App;

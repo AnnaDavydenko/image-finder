@@ -1,16 +1,16 @@
 import { createMuiTheme, responsiveFontSizes } from '@material-ui/core';
 
 // colors
-const primary = '#ff385c';
-const secondary = '#00add7';
+const primary = '#ef0d33';
+const secondary = '#2c333f';
 
 // background
-const backgroundPaper = '#ffffff';
-const backgroundDefault = '#f7f7f7';
+const backgroundPaper = '#f0f2f5';
+const backgroundDefault = '#e1e1ed';
 
 // text
-const textPrimary = '#ff385c';
-const textSecondary = '#717171';
+const textPrimary = '#ef0d33';
+const textSecondary = '#475366';
 
 const theme = createMuiTheme({
   palette: {
@@ -29,9 +29,10 @@ const theme = createMuiTheme({
       secondary: textSecondary,
     },
   },
+
   typography: {
     h1: {
-      fontFamily: '"Vollkorn SC", serif',
+      fontFamily: 'system-ui',
     },
     h2: {
       fontFamily: '"Fondamento", cursive',

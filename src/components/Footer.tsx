@@ -1,5 +1,5 @@
 import React, {FC} from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import {Link} from "@material-ui/core";
 
@@ -23,38 +23,45 @@ const Footer: FC = () => {
     );
 };
 
-const useStyles = makeStyles({
-    footer: {
-        // position: 'absolute',
-        bottom: 0,
-        color: '#3288dc',
-        width: '100%',
-        display: 'flex',
-        justifyContent: 'space-evenly',
-        alignItems: 'center',
-        fontSize: '1.3rem',
+const useStyles = makeStyles((theme: Theme) =>
+    createStyles({
+        footer: {
+            position: 'fixed',
+            bottom: 0,
+            color: theme.palette.text.secondary,
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'space-evenly',
+            alignItems: 'center',
+            fontSize: '1.3rem',
 
-        padding: '1rem',
-        background: 'lightgrey',
+            padding: '1rem',
+            background: 'lightgrey',
 
-    },
-    githubIcon: {
-        color: '#3288dc',
-        paddingRight: '0.5rem',
-        '& svg': {
-            verticalAlign: 'middle',
         },
-    },
-    githubLink: {
-        color: '#3288dc',
-        outline: 'none',
-        textDecoration: 'none',
-        '&:hover':{
-            color: '#01c5f1',
-        }
-    },
-
-});
+        githubIcon: {
+            color: theme.palette.text.secondary,
+            paddingRight: '0.5rem',
+            fontSize: '23px',
+            '& svg': {
+                verticalAlign: 'middle',
+            },
+            '&:hover': {
+                color: theme.palette.primary.main,
+            }
+        },
+        githubLink: {
+            color: theme.palette.text.secondary,
+            outline: 'none',
+            textDecoration: 'none',
+            display: 'flex',
+            alignItems: 'center',
+            '&:hover': {
+                color: theme.palette.primary.main,
+            }
+        },
+    })
+);
 
 export default Footer;
 
