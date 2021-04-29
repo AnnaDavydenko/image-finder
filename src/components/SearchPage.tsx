@@ -12,6 +12,10 @@ import {favoritesDataSelector} from "../redux/favorites/selectors";
 import {IFavorite} from "../common/types";
 import Loader from "./Loader";
 
+import SearchIcon from '@material-ui/icons/Search';
+import {IconButton} from "@material-ui/core";
+import NotFound from "./NotFound";
+
 const IMAGES_PER_PAGE = 6;
 
 const SearchPage: FC = () => {
@@ -54,9 +58,20 @@ const SearchPage: FC = () => {
         }
     },[dispatch, images, links, favoritesData]);
 
+    const handleSearch = useCallback(() => {
+        dispatch(searchImagesThunk(value, page, IMAGES_PER_PAGE));
+    },[dispatch, value, page]);
+
+    const handleKeyPress = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+        e.preventDefault();
+        if (e.key === "Enter") {
+            handleSearch();
+        }
+    }, [handleSearch]);
+
     return (
         <>
-        {!imagesData.isLoading ? (<Loader/>) : (
+        {!images.length && imagesData.isLoading ? (<Loader/>) : (
             <Grid container direction="column" justify="space-between" alignItems="center" className={classes.container}>
                     <Grid container justify="flex-end" alignItems="center">
                         <Grid container className={classes.search}>
@@ -67,29 +82,38 @@ const SearchPage: FC = () => {
                                     root: classes.inputRoot,
                                     input: classes.inputInput,
                                 }}
+                                onKeyUp={handleKeyPress}
                                 inputProps={{ 'aria-label': 'search' }}
                                 onChange={handleChange}
                                 value={value}
                             />
+                            <IconButton onClick={handleSearch} className={classes.iconButton} aria-label="search">
+                                <SearchIcon />
+                            </IconButton>
                         </Grid>
                     </Grid>
-                    <Grid container justify="center" alignItems="center">
-                        {displayImages.map((imageData, index) => (
-                            <ImageCard isBookmark={imageData.isBookmark as boolean}
-                                       key={imageData.id}
-                                       id={imageData.id}
-                                       imageUrl={imageData.image}
-                                       index={index}
-                                       link={links[index]}
-                                       handleBookmark={handleBookmark}/>
-                        ))}
-                    </Grid>
-                    <PaginationComponent totalPages={totalPages} ImagesPerPage={IMAGES_PER_PAGE} page={page} handleChangePage={handleChangePage}/>
+                    { !images.length && !imagesData.isLoading ? (<NotFound/>) : (
+                        <>
+                            <Grid container justify="center" alignItems="center">
+                                {displayImages.map((imageData, index) => (
+                                    <ImageCard isBookmark={imageData.isBookmark as boolean}
+                                               key={imageData.id}
+                                               id={imageData.id}
+                                               imageUrl={imageData.image}
+                                               index={index}
+                                               link={links[index]}
+                                               handleBookmark={handleBookmark}/>
+                                ))}
+                            </Grid>
+                            <PaginationComponent totalPages={totalPages} ImagesPerPage={IMAGES_PER_PAGE} page={page}
+                            handleChangePage={handleChangePage}/>
+                        </>
+                    )}
+
                 </Grid>)}
         </>
 	);
 };
-
 
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -98,38 +122,14 @@ const useStyles = makeStyles((theme: Theme) =>
             overflow: 'auto',
             paddingRight: '23px',
         },
-        imageContainer: {
-            margin: theme.spacing(3.5, 0),
-            position: 'relative',
-            backgroundColor: 'cadetblue',
-        },
-        bookmarkIcon: {
-          position: 'absolute',
-          top: 0,
-          right: 0,
-        },
-        card: {
-            maxWidth: theme.spacing(60),
-        },
-        mediaImage: {
-            height: theme.spacing(30),
-            transition: 'all .5s',
-            '&:hover': {
-                transform: 'scale(1.2)',
-                backgroundPositionY: '-18px',
-            },
-        },
         search: {
-            position: 'relative',
             borderRadius: theme.shape.borderRadius,
             backgroundColor: fade(theme.palette.common.white, 0.15),
             '&:hover': {
-                backgroundColor: fade(theme.palette.common.white, 0.25),
+                backgroundColor: fade(theme.palette.common.white, 0.5),
             },
-            marginLeft: 0,
             marginTop: theme.spacing(1),
-            width: '100%',
-            [theme.breakpoints.up('sm')]: {
+            [theme.breakpoints.up('xs')]: {
                 width: 'auto',
             },
         },

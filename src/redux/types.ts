@@ -1,5 +1,7 @@
 import { ThunkDispatch } from 'redux-thunk';
 import {IImagesState} from "./images/reducer";
+import {IFavoritesState} from "./favorites/reducer";
+import {ITaggedImagesState} from "./tags/reducer";
 
 export interface IAction<P> {
   type: string;
@@ -13,8 +15,9 @@ export interface IHandlers<S, P> {
 }
 
 export interface RootState {
-  //todo add
   images: IImagesState;
+  favorites: IFavoritesState;
+  taggedImages: ITaggedImagesState;
 }
 
 export type AsyncDispatch<T, P> = (

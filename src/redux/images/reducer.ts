@@ -40,19 +40,6 @@ export const images = (state: IImagesState = initialState, action: IAction<IImag
         error: action.payload
       };
 
-    // case ADD_SCORE.START:
-    //   return {
-    //     ...state,
-    //     isUpdating: true
-    //   };
-    //
-    // case ADD_SCORE.FINISHED:
-    //   return {
-    //     ...state,
-    //     list: [...state.list, action.payload],
-    //     isUpdating: false
-    //   };
-
     default:
       return state;
   }

@@ -1,4 +1,4 @@
-import React, {FC, useCallback, useEffect} from 'react';
+import React, {FC} from 'react';
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 import Footer from "./components/Footer";
 import Header from "./components/Header";
@@ -37,7 +37,10 @@ const App: FC = () => {
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         container: {
-            // height: 'calc(100% - 111px)',
+            backgroundImage: 'radial-gradient(#e1e1ed 20%, transparent 20%), radial-gradient(#fff4f67d 20%, transparent 20%)',
+            backgroundColor: '#e1e1ed8f',
+            backgroundPosition: '0 0, 50px 50px',
+            backgroundSize: '100px 100px',
         },
     })
 );

@@ -19,21 +19,23 @@ const Navigation: FC = () => {
     }, [history]);
 
 	return (
-        <Grid container direction="column" justify="space-around" alignItems="center" className={classes.navigation}>
-            <button
-                className={classes.navigationBtn}
-                onClick={handleFinder}
-                type="button"
-            >
-                <ImageSearchIcon fontSize="large" className={classes.icon}/>
-            </button>
-            <button
-                className={classes.navigationBtn}
-                onClick={handleBookmarks}
-                type="button"
-            >
-                <BookmarksIcon className={classes.icon}/>
-            </button>
+        <Grid container direction="column" alignItems="center" className={classes.navigation}>
+            <Grid container direction="column" justify="space-around" alignItems="center" className={classes.buttonsContainer}>
+                <button
+                    className={classes.navigationBtn}
+                    onClick={handleFinder}
+                    type="button"
+                >
+                    <ImageSearchIcon fontSize="large" className={classes.icon}/>
+                </button>
+                <button
+                    className={classes.navigationBtn}
+                    onClick={handleBookmarks}
+                    type="button"
+                >
+                    <BookmarksIcon className={classes.icon}/>
+                </button>
+            </Grid>
         </Grid>
 	);
 };
@@ -45,6 +47,12 @@ const useStyles = makeStyles((theme: Theme) =>
             width: '6rem',
             height: '100%',
             backgroundColor: theme.palette.background.default,
+        },
+        buttonsContainer: {
+            height: '30%',
+            [theme.breakpoints.up('xs')]: {
+                height: '20%',
+            },
         },
         navigationBtn: {
             background: 'transparent',

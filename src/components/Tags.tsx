@@ -1,12 +1,9 @@
-import React, {FC, LegacyRef, useCallback, useRef, useState} from 'react';
-import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
+import React, {FC, useCallback, useState} from 'react';
+import {createStyles, fade, makeStyles, Theme} from '@material-ui/core/styles';
 import {useDispatch, useSelector} from "react-redux";
-import {favoritesDataSelector} from "../redux/favorites/selectors";
 import {taggedImagesSelector} from "../redux/tags/selectors";
 import {addTagToImageThunk, removeTaggedImagesThunk} from "../redux/tags/thunk";
+import {ITaggedImages} from "../common/types";
 
 const ENTER_KEY = 'Enter';
 const COMMA_KEY = ',';
@@ -15,7 +12,7 @@ const BACKSPACE_KEY = 'Backspace';
 const Tags: FC<{id: string}> = (props: {id: string}) => {
     const {id} = props;
     const taggedImages = useSelector(taggedImagesSelector);
-    const image = taggedImages.find((item: any) => item.id === id);
+    const image = taggedImages.find((item: ITaggedImages) => item.id === id);
 
     const [tags, setTags] = useState<string[]>(image?.tags || []);
     const [value, setValue] = useState<string>("");
@@ -91,6 +88,8 @@ const useStyles = makeStyles((theme: Theme) =>
             color: theme.palette.background.paper,
             padding: '5px',
             overflow: 'hidden',
+            minHeight: '130px',
+            width: '200px',
         },
         tag: {
             color: theme.palette.background.paper,
@@ -108,13 +107,12 @@ const useStyles = makeStyles((theme: Theme) =>
         },
         input: {
             padding: '5px 10px',
-            boxSizing: 'border-box',
-            color: theme.palette.text.secondary,
-            border: 0,
-            float: 'left',
+            backgroundColor: theme.palette.background.paper,
             margin: '10px 0',
             fontSize: '16px',
-            outline: 0,
+            '&:hover': {
+                backgroundColor: fade(theme.palette.common.white, 0.5),
+            },
         },
     })
 );

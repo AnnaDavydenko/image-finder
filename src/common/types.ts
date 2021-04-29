@@ -1,9 +1,6 @@
 import {IImagesState} from "../redux/images/reducer";
 import {IFavoritesState} from "../redux/favorites/reducer";
-
-export interface IImages {
-    imagesURLs: string[],
-}
+import {ITaggedImagesState} from "../redux/tags/reducer";
 
 export interface IFavorite {
     id: string,
@@ -12,21 +9,20 @@ export interface IFavorite {
     tags?: string;
 }
 
-
-export interface ILinks {
-    linksToImagesURLs: string[],
-}
-
 export interface IState {
     images: IImagesState;
     favorites: IFavoritesState;
-    taggedImages: any;
+    taggedImages: ITaggedImagesState;
 }
 
 export interface IImagesData {
     totalPages: number;
     images: {id: string; image: string; isBookmark?: boolean;}[];
     links: string[];
+}
+export interface ITaggedImages {
+    id: string;
+    tags: string[];
 }
 
 export interface IPhoto {

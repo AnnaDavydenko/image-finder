@@ -21,7 +21,7 @@ const ImageCard: FC<IProps> = (props: IProps) => {
     const classes = useStyles();
 
 	return (
-        <Grid container justify="center" alignItems="center" item md={4} xs={6} className={classes.imageContainer}>
+        <Grid container justify="center" alignItems="center" item md={4} sm={6} xs={12} className={classes.imageContainer}>
             <Zoom in>
                 <Card className={classes.card}>
                     <CardMedia
@@ -30,7 +30,7 @@ const ImageCard: FC<IProps> = (props: IProps) => {
                     />
                     <CardContent>
                         <Grid container justify="space-between" alignItems="center">
-                            <Link href={link} target="_blank">
+                            <Link href={link} target="_blank" className={classes.link}>
                                 <LinkIcon fontSize="large" className={classes.icon} />
                             </Link>
                             <IconButton onClick={handleBookmark(index)} aria-label="bookmark">
@@ -51,7 +51,6 @@ const useStyles = makeStyles((theme: Theme) =>
         imageContainer: {
             margin: theme.spacing(3.5, 0),
             position: 'relative',
-            backgroundColor: 'cadetblue',
         },
         card: {
             maxWidth: theme.spacing(60),
@@ -63,6 +62,13 @@ const useStyles = makeStyles((theme: Theme) =>
                 transform: 'scale(1.2)',
                 backgroundPositionY: '-18px',
             },
+        },
+        link: {
+            padding: '12px',
+            borderRadius: '50%',
+          '&:hover': {
+              backgroundColor: 'rgba(0, 0, 0, 0.04)',
+          }
         },
         icon: {
             color: theme.palette.primary.main,

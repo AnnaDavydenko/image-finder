@@ -1,4 +1,4 @@
-import {IFavorite} from "../common/types";
+import {IFavorite, ITaggedImages} from "../common/types";
 
 export class Storage {
   storage: string;
@@ -35,7 +35,7 @@ export class Storage {
     this.commit(storage);
   }
 
-  getTaggedImages(): any[] {
+  getTaggedImages(): ITaggedImages[] {
     const storage = JSON.parse(window.localStorage.getItem(this.storage) as string);
     return storage.taggedImages;
   }

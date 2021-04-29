@@ -1,15 +1,18 @@
-import React, {FC, useCallback, useEffect} from 'react';
-import {createStyles, makeStyles, Theme} from '@material-ui/core/styles';
+import React, {ChangeEvent, FC, useCallback, useEffect, useMemo, useState} from 'react';
 import Grid from '@material-ui/core/Grid';
 import {useDispatch, useSelector} from "react-redux";
 import {favoritesDataSelector} from "../redux/favorites/selectors";
 import ImageCard from "./ImageCard";
 import {getFavoritesThunk, removeFavoritesThunk} from "../redux/favorites/thunk";
+import PaginationComponent from "./PaginationComponent";
+
+const IMAGES_PER_PAGE = 6;
 
 const Bookmarks: FC = () => {
 
-    const classes = useStyles();
     const favoritesData = useSelector(favoritesDataSelector);
+
+    const [page, setPage] = useState<number>(1);
 
     const dispatch = useDispatch();
 
@@ -17,49 +20,35 @@ const Bookmarks: FC = () => {
         dispatch(getFavoritesThunk());
     },[dispatch]);
 
+    const displayImages = useMemo(() => {
+        return favoritesData.slice((page - 1) * IMAGES_PER_PAGE, page * IMAGES_PER_PAGE)
+    }, [favoritesData, page]);
+
+    const handleChangePage = useCallback((event: ChangeEvent<unknown>, value: number) => {
+        setPage(value);
+    }, []);
+
     const handleBookmark = useCallback((index) => () => {
         dispatch(removeFavoritesThunk(favoritesData[index].id));
     },[dispatch, favoritesData]);
 
 	return (
-        <Grid container justify="center" alignItems="center">
-            {favoritesData.map((imageData, index) => (
-                <ImageCard
-                    isBookmark={true}
-                    imageUrl={imageData.image}
-                    key={imageData.id}
-                    id={imageData.id}
-                    index={index}
-                    link={imageData.link}
-                    handleBookmark={handleBookmark}/>
-            ))}
-        </Grid>
+	    <>
+            <Grid container justify="center" alignItems="center">
+                {displayImages.map((imageData, index) => (
+                    <ImageCard
+                        isBookmark={true}
+                        imageUrl={imageData.image}
+                        key={imageData.id}
+                        id={imageData.id}
+                        index={index}
+                        link={imageData.link}
+                        handleBookmark={handleBookmark}/>
+                ))}
+            </Grid>
+            <PaginationComponent totalPages={favoritesData.length} ImagesPerPage={IMAGES_PER_PAGE} page={page}
+                                 handleChangePage={handleChangePage}/>
+        </>
 	);
 };
-
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        imageContainer: {
-            margin: theme.spacing(3.5, 0),
-            position: 'relative',
-            backgroundColor: 'cadetblue',
-        },
-        card: {
-            maxWidth: theme.spacing(60),
-        },
-        mediaImage: {
-            height: theme.spacing(30),
-            transition: 'all .5s',
-            '&:hover': {
-                transform: 'scale(1.2)',
-                backgroundPositionY: '-18px',
-            },
-        },
-        bookmarkIcon: {
-            position: 'absolute',
-            top: 0,
-            right: 0,
-        },
-    })
-);
 export default Bookmarks;

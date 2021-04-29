@@ -26,7 +26,6 @@ const Footer: FC = () => {
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         footer: {
-            position: 'fixed',
             bottom: 0,
             color: theme.palette.text.secondary,
             width: '100%',
@@ -34,10 +33,9 @@ const useStyles = makeStyles((theme: Theme) =>
             justifyContent: 'space-evenly',
             alignItems: 'center',
             fontSize: '1.3rem',
-
+            marginTop: 'auto',
             padding: '1rem',
             background: 'lightgrey',
-
         },
         githubIcon: {
             color: theme.palette.text.secondary,

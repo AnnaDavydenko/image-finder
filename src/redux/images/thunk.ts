@@ -1,6 +1,6 @@
 import {Dispatch} from "redux";
 import {fetchFailure, fetchSuccess, startRequest} from "./actions";
-import {IData, IImagesData} from "../../common/types";
+import {IData, IImagesData, IPhoto} from "../../common/types";
 
 const API = 'https://api.flickr.com';
 const API_KEY = '9f1b6876b5c0f35a7f9d7c9cb5301b30';
@@ -34,7 +34,7 @@ const jsonParse = (data: IData): IImagesData => {
     const result: IImagesData = {totalPages: 0, images: [], links: []};
 
     if (data.stat === "ok") {
-        data.photos.photo.forEach((item: any) => {
+        data.photos.photo.forEach((item: IPhoto) => {
             result.images.push({id: item.id, image: item.url_q});
             result.links.push(`${flickerBaseUrl}/${item.owner}/${item.id}`);
         });

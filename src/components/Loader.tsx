@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme: Theme) =>
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            height: '100%',
+            height: 'calc(100vh - 111px);',
             '& > * + *': {
                 marginLeft: theme.spacing(2),
             },
