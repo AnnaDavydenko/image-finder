@@ -25,6 +25,7 @@ const ImageCard: FC<IProps> = (props: IProps) => {
             <Zoom in>
                 <Card className={classes.card}>
                     <CardMedia
+                        title={"image card"}
                         className={classes.mediaImage}
                         image={imageUrl}
                     />
